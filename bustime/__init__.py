@@ -80,6 +80,15 @@ class BusTime:
         resp = self.__callrest("getvehicles", **kwargs)
         return resp["bustime-response"]["vehicle"]
 
+    def getroutes(self, feed=None):
+        """Lists the routes in the system. The dictionary is like:
+        {'rt': '12', 'rtnm': 'MCKNIGHT', 'rtclr': '#cc00cc'}"""
+        if feed:
+            resp = self.__callrest("getroutes", rtpidatafeed=feed)
+        else:
+            resp = self.__callrest("getroutes")
+        return resp["bustime-response"]["routes"]
+
 
 class Distance:
     def __init__(self, google_key, window_size = 45):
