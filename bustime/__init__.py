@@ -43,42 +43,50 @@ class BusTime:
         for (k,v) in kwargs.items():
             url += "&{0}={1}".format(k,v)
         data = request.urlopen(url).read()
-        return json.loads(data.decode("UTF8"))
+        jd = json.loads(data.decode("UTF8"))
+        resp = jd["bustime-response"]
+        if "error" in resp.keys():
+            raise BustimeError(resp["error"][0]["msg"])
+        return resp
 
     def gettime(self):
         """Get the bustime server's system time. Returns a datetime object."""
         resp = self.__callrest("gettime")
-        dt = resp["bustime-response"]["tm"]
+        dt = resp["tm"]
         return dateutil.parser.parse(dt)
 
     def getdirections(self, route):
         """List the directions for a route. In Pittsburgh, this is always ["OUTBOUND","INBOUND"]"""
         resp = self.__callrest("getdirections", rt=route)
-        return [d["dir"] for d in resp["bustime-response"]["directions"]]
+        return [d["dir"] for d in resp["directions"]]
 
     def getstops(self, route, direction):
         """List the stops for a route, going in a certain direction. BusTime returns a JSON object, which converts to
         a dictionary like:
         {'stpid': '2564', 'stpnm': '5th Ave  at Meyran Ave', 'lon': -79.959239533731, 'lat': 40.441172012068}"""
         resp= self.__callrest("getstops", rt=route, dir=direction)
-        return resp["bustime-response"]["stops"]
+        return resp["stops"]
 
     def getpredictions(self, stopid, routes=None, top=10):
+        """Return predictions for a stop."""
         if routes:
             rt = ",".join(routes)
             resp = self.__callrest("getpredictions", stpid=stopid, top=top, rt=rt)    
         else:
             resp = self.__callrest("getpredictions", stpid=stopid, top=top)
-        return resp["bustime-response"]["prd"]
+        return resp["prd"]
 
     def getvehicles(self, vehicles=None, routes=None, resolution="s"):
+        """Returns vehicles, either selected by ID or by route numbers."""
+        if(vehicles and routes):
+            raise BustimeParameterError("Supply vehicles or routes, but not both.")
         kwargs = dict()
         if vehicles:
-            kwargs["vid"] = ",".join(vehicles)
+            kwargs["vid"] = ",".join([str(v) for v in vehicles])
         if routes:
             kwargs["rt"] = ",".join(routes)
         resp = self.__callrest("getvehicles", **kwargs)
-        return resp["bustime-response"]["vehicle"]
+        return resp["vehicle"]
 
     def getroutes(self, feed=None):
         """Lists the routes in the system. The dictionary is like:
@@ -87,7 +95,7 @@ class BusTime:
             resp = self.__callrest("getroutes", rtpidatafeed=feed)
         else:
             resp = self.__callrest("getroutes")
-        return resp["bustime-response"]["routes"]
+        return resp["routes"]
 
 
 class Distance:
