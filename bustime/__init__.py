@@ -111,6 +111,21 @@ class BusTime:
             kwargs["rt"] = ",".join(routes)
         return self.__callrest("getpatterns", **kwargs)["ptr"]
 
+    def getservicebulletins(self, **kwargs):
+        params = dict()
+        if not "routes" in kwargs and not "stops" in kwargs:
+            raise BustimeParameterError("Routes and/or stops are required.")
+        if "routes" in kwargs:
+            params["rt"] = ",".join(kwargs["routes"])
+        if "stops" in kwargs:
+            params["stpid"] = ",".join(kwargs["stops"])
+        if "direction" in kwargs:
+            params["rtdir"] = kwargs["direction"]
+        return self.__callrest("getservicebulletins")["sb"]
+
+    def getrtpidatafeeds(self):
+        return self.__callrest("getrtpidatafeeds")["rtpidatafeeds"]
+
 
 class Distance:
     def __init__(self, google_key, window_size = 45):
