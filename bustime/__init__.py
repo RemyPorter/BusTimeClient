@@ -1,8 +1,9 @@
 import urllib.request as request
 import json
+import dateutil.parser
 
 base = "http://realtime.portauthority.org/bustime/api/v2/{method}?key={key}&format={format}"
-
+max_ids = 10
 class Stops:
     """Manage stop data. Depends on a BusTime API object and a Distance API client.
     """
@@ -27,6 +28,7 @@ class Stops:
 
 
 
+
 class BusTime:
     """Wrapper around the BusTime API service. Handles all of the communication, parsing of JSON, and extracting key data from
     BusTime API responses."""
@@ -41,6 +43,12 @@ class BusTime:
             url += "&{0}={1}".format(k,v)
         data = request.urlopen(url).read()
         return json.loads(data.decode("UTF8"))
+
+    def gettime(self):
+        """Get the bustime server's system time. Returns a datetime object."""
+        resp = self.__callrest("gettime")
+        dt = resp["bustime-response"]["tm"]
+        return dateutil.parser.parse(dt)
 
     def getdirections(self, route):
         """List the directions for a route. In Pittsburgh, this is always ["OUTBOUND","INBOUND"]"""
