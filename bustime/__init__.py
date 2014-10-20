@@ -26,7 +26,8 @@ class Stops:
             distance_item = lambda x: x[0]["value"] <= distance
         return [s[2] for s in distances if distance_item(s)]
 
-
+class BustimeError(Exception): pass
+class BustimeParameterError(BustimeError): pass
 
 
 class BusTime:
@@ -69,6 +70,16 @@ class BusTime:
         else:
             resp = self.__callrest("getpredictions", stpid=stopid, top=top)
         return resp["bustime-response"]["prd"]
+
+    def getvehicles(self, vehicles=None, routes=None, resolution="s"):
+        kwargs = dict()
+        if vehicles:
+            kwargs["vid"] = ",".join(vehicles)
+        if routes:
+            kwargs["rt"] = ",".join(routes)
+        resp = self.__callrest("getvehicles", **kwargs)
+        return resp["bustime-response"]["vehicle"]
+
 
 class Distance:
     def __init__(self, google_key, window_size = 45):
