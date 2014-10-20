@@ -80,6 +80,8 @@ class BusTime:
         """Returns vehicles, either selected by ID or by route numbers."""
         if(vehicles and routes):
             raise BustimeParameterError("Supply vehicles or routes, but not both.")
+        if(not vehicles and not routes):
+            raise BustimeParameterError("Vehicles or routes are required.")
         kwargs = dict()
         if vehicles:
             kwargs["vid"] = ",".join([str(v) for v in vehicles])
@@ -96,6 +98,18 @@ class BusTime:
         else:
             resp = self.__callrest("getroutes")
         return resp["routes"]
+
+    def getpatterns(self, patterns=None, routes=None):
+        if (patterns and routes):
+            raise BustimeParameterError("Supply pattern ids or route names, but not both.")
+        if (not patterns and not routes):
+            raise BustimeParameterError("Pattern ids or routes are required")
+        kwargs = dict()
+        if patterns:
+            kwargs["pid"] = ",".join([str(p) for p in patterns])
+        if routes:
+            kwargs["rt"] = ",".join(routes)
+        return self.__callrest("getpatterns", **kwargs)["ptr"]
 
 
 class Distance:
