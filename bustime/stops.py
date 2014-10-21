@@ -25,3 +25,21 @@ class Stops:
         else:
             distance_item = lambda x: x[0]["value"] <= distance
         return [s[2] for s in distances if distance_item(s)]
+
+    def next_busses(self, route, direction, location, 
+        distance=400, duration=None):
+        """Check predictions for nearby stops, sorted by arrivals."""
+        stops = self.stops_in_range(route, direction, 
+            location, distance, duration)
+        ids = [s["stpid"] for s in stops]
+        predictions = self.__getpredics(ids, [route], direction)
+        return predictions
+
+    def __getpredics(self, ids, route, direction):
+        if len(ids) <= 10:
+            return self.api.getpredictions(",".join(ids),
+                route)
+        else:
+            return self.api.getpredictions(",".join(ids[:10]),
+                route) + self.__getpredics(ids[10:], route, direction)
+
