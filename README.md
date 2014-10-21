@@ -9,5 +9,5 @@ DistanceMatrix API for doing distance calculations.
 
 Example usage:
 
-    >>> client = BusTime("http://realtime.portauthority.org/bustime/api/v2/{method}?key={key}&format={format}", API_KEY)
+    >>> client = BusTime(BASE, API_KEY) #BASE is base URL for access
     >>> client.getroutes() #return a list of routes
