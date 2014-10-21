@@ -64,17 +64,19 @@ class BusTime:
             resp = self.__callrest("getpredictions", stpid=stopid, top=top)
         return resp["prd"]
 
-    def getvehicles(self, vehicles=None, routes=None, resolution="s"):
-        """Returns vehicles, either selected by ID or by route numbers."""
-        if (vehicles and routes):
+    def getvehicles(self, vehicles=None, routes=None, resolution="S"):
+        """Returns vehicles, either selected by ID or by route numbers.
+        Resolution is the time resolution- S for seconds, M for minutes"""
+        if vehicles and routes:
             raise BustimeParameterError("Supply vehicles or routes, but not both.")
-        if (not vehicles and not routes):
+        if not vehicles and not routes:
             raise BustimeParameterError("Vehicles or routes are required.")
         kwargs = dict()
         if vehicles:
             kwargs["vid"] = ",".join([str(v) for v in vehicles])
         if routes:
             kwargs["rt"] = ",".join(routes)
+        kwargs["resolution"] = resolution
         resp = self.__callrest("getvehicles", **kwargs)
         return resp["vehicle"]
 
@@ -88,9 +90,9 @@ class BusTime:
         return resp["routes"]
 
     def getpatterns(self, patterns=None, routes=None):
-        if (patterns and routes):
+        if patterns and routes:
             raise BustimeParameterError("Supply pattern ids or route names, but not both.")
-        if (not patterns and not routes):
+        if not patterns and not routes:
             raise BustimeParameterError("Pattern ids or routes are required")
         kwargs = dict()
         if patterns:
@@ -109,7 +111,7 @@ class BusTime:
             params["stpid"] = ",".join(kwargs["stops"])
         if "direction" in kwargs:
             params["rtdir"] = kwargs["direction"]
-        return self.__callrest("getservicebulletins")["sb"]
+        return self.__callrest("getservicebulletins", **params)["sb"]
 
     def getrtpidatafeeds(self):
         return self.__callrest("getrtpidatafeeds")["rtpidatafeeds"]
