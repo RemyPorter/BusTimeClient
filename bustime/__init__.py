@@ -1,28 +1,31 @@
+"""This is a simple wrapper object around the BusTime API."""
+
 import urllib.request as request
 import json
 import dateutil.parser
 from .distance import Distance
 from .stops import Stops
 
-base = "http://realtime.portauthority.org/bustime/api/v2/{method}?key={key}&format={format}"
-max_ids = 10
+BASE = "http://realtime.portauthority.org/bustime/api/v2/{method}?key={key}&format={format}"
 
 class BustimeError(Exception): pass
 class BustimeParameterError(BustimeError): pass
 
 
 class BusTime:
-    """Wrapper around the BusTime API service. Handles all of the communication, parsing of JSON, and extracting key data from
+    """Wrapper around the BusTime API service. Handles all of the communication,
+    parsing of JSON, and extracting key data from
     BusTime API responses."""
     def __init__(self, apibase, key):
         self.key = key
         self.apibase = apibase
-    
+
     def __callrest(self, method, **kwargs):
-        """Invoke a RESTful method. Params passed as kwargs are converted to URL parameters"""
+        """Invoke a RESTful method.
+        Params passed as kwargs are converted to URL parameters"""
         url = self.apibase.format(key=self.key, format="json", method=method)
-        for (k,v) in kwargs.items():
-            url += "&{0}={1}".format(k,v)
+        for (k, v) in kwargs.items():
+            url += "&{0}={1}".format(k, v)
         data = request.urlopen(url).read()
         jd = json.loads(data.decode("UTF8"))
         resp = jd["bustime-response"]
@@ -37,31 +40,35 @@ class BusTime:
         return dateutil.parser.parse(dt)
 
     def getdirections(self, route):
-        """List the directions for a route. In Pittsburgh, this is always ["OUTBOUND","INBOUND"]"""
+        """List the directions for a route.
+        In Pittsburgh, this is always ["OUTBOUND","INBOUND"]"""
         resp = self.__callrest("getdirections", rt=route)
         return [d["dir"] for d in resp["directions"]]
 
     def getstops(self, route, direction):
-        """List the stops for a route, going in a certain direction. BusTime returns a JSON object, which converts to
-        a dictionary like:
-        {'stpid': '2564', 'stpnm': '5th Ave  at Meyran Ave', 'lon': -79.959239533731, 'lat': 40.441172012068}"""
-        resp= self.__callrest("getstops", rt=route, dir=direction)
+        """List the stops for a route, going in a certain direction.
+        BusTime returns a JSON object, which converts to
+            a dictionary like:
+        {'stpid': '2564', 'stpnm': '5th Ave  at Meyran Ave',
+        'lon': -79.959239533731, 'lat': 40.441172012068}"""
+        resp = self.__callrest("getstops", rt=route, dir=direction)
         return resp["stops"]
 
     def getpredictions(self, stopid, routes=None, top=10):
         """Return predictions for a stop."""
         if routes:
             rt = ",".join(routes)
-            resp = self.__callrest("getpredictions", stpid=stopid, top=top, rt=rt)    
+            resp = self.__callrest("getpredictions", stpid=stopid,
+                    top=top, rt=rt)
         else:
             resp = self.__callrest("getpredictions", stpid=stopid, top=top)
         return resp["prd"]
 
     def getvehicles(self, vehicles=None, routes=None, resolution="s"):
         """Returns vehicles, either selected by ID or by route numbers."""
-        if(vehicles and routes):
+        if (vehicles and routes):
             raise BustimeParameterError("Supply vehicles or routes, but not both.")
-        if(not vehicles and not routes):
+        if (not vehicles and not routes):
             raise BustimeParameterError("Vehicles or routes are required.")
         kwargs = dict()
         if vehicles:
@@ -106,5 +113,3 @@ class BusTime:
 
     def getrtpidatafeeds(self):
         return self.__callrest("getrtpidatafeeds")["rtpidatafeeds"]
-
-__all__ = [Stops, Distance, BusTime, BustimeError, BustimeParameterError]
