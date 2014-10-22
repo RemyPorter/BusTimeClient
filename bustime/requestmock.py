@@ -25,6 +25,7 @@ class MockRequest:
         )
 
     def getdirections(self, **kwargs):
+        assert("rt" in kwargs.keys())
         return json.dumps(
             {"bustime-response":
                 {"directions": [{"dir":"INBOUND"}, {"dir":"OUTBOUND"}]}
@@ -32,6 +33,8 @@ class MockRequest:
         )
 
     def getstops(self, **kwargs):
+        assert("rt" in kwargs.keys())
+        assert("dir" in kwargs.keys())
         return json.dumps(
             {
                 "bustime-response":
@@ -41,6 +44,8 @@ class MockRequest:
             })
 
     def getpredictions(self, **kwargs):
+        assert("stpid" in kwargs)
+        assert(type(kwargs.get("rt", [])) == list)
         return json.dumps({
             "bustime-response":{
                 "prd": [{'rt': '71C', 'typ': 'A',

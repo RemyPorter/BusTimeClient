@@ -6,6 +6,7 @@ import dateutil
 import dateutil.parser
 from .distance import Distance
 from .stops import Stops
+import unittest
 
 BASE = "http://realtime.portauthority.org/bustime/api/v2/{method}?key={key}&format={format}"
 
@@ -124,13 +125,3 @@ class BusTime:
 
     def getrtpidatafeeds(self):
         return self.__callrest("getrtpidatafeeds")["rtpidatafeeds"]
-
-class URLTest(unittest.TestCase):
-    def setUp(self):
-        self.bustime = BusTime(BASE, "NOKEY")
-    def test_method(self):
-        method = self.bustime.buildurl("test_method", **{})
-        self.assertEqual(method, "http://realtime.portauthority.org/bustime/api/v2/test_method?key=NOKEY&format=JSON")
-
-if __name__ == '__main__':
-    unittest.main()
