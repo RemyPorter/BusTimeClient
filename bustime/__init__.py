@@ -11,14 +11,17 @@ BASE = "http://realtime.portauthority.org/bustime/api/v2/{method}?key={key}&form
 class BustimeError(Exception): pass
 class BustimeParameterError(BustimeError): pass
 
+_request_factory = lambda: request
+
 
 class BusTime:
     """Wrapper around the BusTime API service. Handles all of the communication,
     parsing of JSON, and extracting key data from
     BusTime API responses."""
-    def __init__(self, apibase, key):
+    def __init__(self, apibase, key, *, factory=_request_factory):
         self.key = key
         self.apibase = apibase
+        self.request = factory()
 
     def __callrest(self, method, **kwargs):
         """Invoke a RESTful method.
@@ -26,7 +29,7 @@ class BusTime:
         url = self.apibase.format(key=self.key, format="json", method=method)
         for (k, v) in kwargs.items():
             url += "&{0}={1}".format(k, v)
-        data = request.urlopen(url).read()
+        data = self.request.urlopen(url).read()
         jd = json.loads(data.decode("UTF8"))
         resp = jd["bustime-response"]
         if "error" in resp.keys():
