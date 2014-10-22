@@ -1,7 +1,9 @@
 # BusTime Client
 This is a simple Python3 client library for the BusTime API used by the Pittsburgh Port Authority. 
 
-It has no external dependencies.
+It depends on python-dateutil for date parsing.
+
+    $ pip3 install python-dateutil
 
 [Details](http://realtime.portauthority.org/bustime/home.jsp).
 
