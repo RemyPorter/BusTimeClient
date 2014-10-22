@@ -2,6 +2,7 @@
 
 import urllib.request as request
 import json
+import dateutil
 import dateutil.parser
 from .distance import Distance
 from .stops import Stops
@@ -23,12 +24,17 @@ class BusTime:
         self.apibase = apibase
         self.request = factory()
 
-    def __callrest(self, method, **kwargs):
-        """Invoke a RESTful method.
-        Params passed as kwargs are converted to URL parameters"""
+    def buildurl(self, method, **kwargs):
+        """Generate the URL for the restful methods."""
         url = self.apibase.format(key=self.key, format="json", method=method)
         for (k, v) in kwargs.items():
             url += "&{0}={1}".format(k, v)
+        return url
+
+    def __callrest(self, method, **kwargs):
+        """Invoke a RESTful method.
+        Params passed as kwargs are converted to URL parameters"""
+        url = self.buildurl(method, **kwargs)
         data = self.request.urlopen(url).read()
         jd = json.loads(data.decode("UTF8"))
         resp = jd["bustime-response"]
@@ -118,3 +124,13 @@ class BusTime:
 
     def getrtpidatafeeds(self):
         return self.__callrest("getrtpidatafeeds")["rtpidatafeeds"]
+
+class URLTest(unittest.TestCase):
+    def setUp(self):
+        self.bustime = BusTime(BASE, "NOKEY")
+    def test_method(self):
+        method = self.bustime.buildurl("test_method", **{})
+        self.assertEqual(method, "http://realtime.portauthority.org/bustime/api/v2/test_method?key=NOKEY&format=JSON")
+
+if __name__ == '__main__':
+    unittest.main()
