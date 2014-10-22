@@ -21,15 +21,13 @@ class MockRequest:
 
     def gettime(self, **kwargs):
         return json.dumps(
-            {"bustime-response": {"tm": "20141012 10:21:04","_args":kwargs}}
+            {"bustime-response": {"tm": "20141012 10:21:04"}}
         )
 
     def getdirections(self, **kwargs):
         return json.dumps(
             {"bustime-response": 
-                {"directions": [{"dir":"INBOUND"}, {"dir":"OUTBOUND"}],
-                    "_args":kwargs
-                }
+                {"directions": [{"dir":"INBOUND"}, {"dir":"OUTBOUND"}]}
             }
         )
 
@@ -39,8 +37,7 @@ class MockRequest:
                 "bustime-response": 
                 {"stops": [
                 {'stpid': '2564', 'stpnm': '5th Ave  at Meyran Ave',
-                'lon': -79.959239533731, 'lat': 40.441172012068}], 
-                "_args":kwargs}
+                'lon': -79.959239533731, 'lat': 40.441172012068}]}
             })
 
     def getpredictions(self, **kwargs):
@@ -53,7 +50,35 @@ class MockRequest:
                 'dstp': 4198, 'stpnm': '5th Ave at Chesterfield Rd', 
                 'stpid': '38', 'tatripid': '159261', 
                 'tmstmp': '20141022 12:31', 'tablockid': '071C-150', 
-                'vid': '5678'}],
-                "_args": kwargs
+                'vid': '5678'}]}
+            })
+
+    def getvehicles(self, **kwargs):
+        return json.dumps({
+            "bustime-response":{
+                "vehicle":[{'tablockid': '071C-148', 'pid': 2363, 
+                'tatripid': '159264', 'zone': '', 'des': 'Downtown', 
+                'dly': False, 'spd': 0, 'pdist': 17607, 'hdg': '299', 
+                'tmstmp': '20141022 12:52', 'lat': '40.46042251586914', 
+                'rt': '71C', 'vid': '5669', 'lon': '-79.92157814719461'}]
             }
             })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
