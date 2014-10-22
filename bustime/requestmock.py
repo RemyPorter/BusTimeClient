@@ -28,3 +28,13 @@ class MockRequest:
         return json.dumps(
             {"bustime-response": [{"dir":"INBOUND"}, {"dir":"OUTBOUND"}],
             "_args":kwargs})
+
+    def getstops(self, **kwargs):
+        return json.dumps(
+            {
+                "bustime-response": 
+                {"stops": [
+                {'stpid': '2564', 'stpnm': '5th Ave  at Meyran Ave',
+                'lon': -79.959239533731, 'lat': 40.441172012068}], 
+                "_args":kwargs}
+            })
