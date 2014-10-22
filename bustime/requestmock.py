@@ -13,7 +13,7 @@ class MockRequest:
         parsed = urlparse(url)
         params = parse_qs(parsed.query)
         method = self.getmethod(parsed.path)
-        print(method)
+        assert("key" in params)
         s = getattr(self, method)(**params)
         output.write(s)
         output.seek(0)
@@ -21,5 +21,10 @@ class MockRequest:
 
     def gettime(self, **kwargs):
         return json.dumps(
-            {"bustime-response": {"tm": "20141012 10:21:04"}}
+            {"bustime-response": {"tm": "20141012 10:21:04"}, "_args":kwargs}
         )
+
+    def getdirections(self, **kwargs):
+        return json.dumps(
+            {"bustime-response": [{"dir":"INBOUND"}, {"dir":"OUTBOUND"}],
+            "_args":kwargs})
