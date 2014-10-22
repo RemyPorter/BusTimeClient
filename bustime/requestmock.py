@@ -42,3 +42,18 @@ class MockRequest:
                 'lon': -79.959239533731, 'lat': 40.441172012068}], 
                 "_args":kwargs}
             })
+
+    def getpredictions(self, **kwargs):
+        return json.dumps({
+            "bustime-response":{
+                "prd": [{'rt': '71C', 'typ': 'A', 
+                'prdctdn': '5', 'prdtm': '20141022 12:37', 
+                'rtdir': 'INBOUND', 'zone': '', 
+                'des': 'Downtown', 'dly': False, 
+                'dstp': 4198, 'stpnm': '5th Ave at Chesterfield Rd', 
+                'stpid': '38', 'tatripid': '159261', 
+                'tmstmp': '20141022 12:31', 'tablockid': '071C-150', 
+                'vid': '5678'}],
+                "_args": kwargs
+            }
+            })
