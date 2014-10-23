@@ -20,3 +20,7 @@ Currently, core BusTime object is a mostly complete implementation of the BusTim
 The Stops object is a first attempt at building some more useful operations atop the simple BusTime library. It depends on an instance of the Distance object, which is a simple wrapper around Google's DistanceMatrix API.
 
 My plans for this library are to focus more on interesting query operations, like the Stops object telling me the next busses to arrive in a given range, and *not* so much on being a 100% feature-complete wrapper around the BusTime REST API. 
+
+Run the unit tests with:
+
+    $ python3 -m bustime
