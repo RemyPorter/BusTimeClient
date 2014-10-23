@@ -1,7 +1,7 @@
 import unittest
 import dateutil
 import dateutil.parser
-from . import BusTime, BASE
+from . import BusTime, BASE, BustimeParameterError
 from .requestmock import MockRequest
 
 class URLTest(unittest.TestCase):
@@ -39,6 +39,18 @@ class MockedTest(unittest.TestCase):
         predict = self.bustime.getpredictions("2564", ["71C"])
         self.assertEqual(len(predict), 1)
         self.assertEqual(predict[0]["rt"], "71C")
+
+    def test_vehicles(self):
+        vehic = self.bustime.getvehicles([12])
+        self.assertTrue(len(vehic) > 0)
+        vehic = self.bustime.getvehicles(routes=["71C"])
+        self.assertTrue(len(vehic) > 0)
+
+    def test_patterns(self):
+        p = self.bustime.getpatterns([1,2])
+        self.assertTrue(len(p) > 0)
+        self.assertRaises(BustimeParameterError, self.bustime.getpatterns)
+        self.assertRaises(BustimeParameterError, self.bustime.getpatterns, [1], [2])
 
 
 if __name__ == '__main__':
